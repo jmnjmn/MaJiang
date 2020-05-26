@@ -1,17 +1,17 @@
 ﻿using System.Collections.Generic;
 
-namespace mj
+namespace Core
 {
-    public class HuPai
+    public class Hu
     {
         /// <summary>
         /// lt 是按照从小到大排序后的集合
         /// </summary>
         /// <param name="lt"></param>
         /// <returns></returns>
-        public static bool IsHu(List<Pai> lt, Pai p)
+        public static bool IsHu(List<Mahjong> lt, Mahjong p)
         {
-            var newLt = new List<Pai>(lt.Count + 1);
+            var newLt = new List<Mahjong>(lt.Count + 1);
             newLt.AddRange(lt);
             newLt.Add(p);
             newLt.Sort((a, b) => a.Id - b.Id);
@@ -23,7 +23,7 @@ namespace mj
             return NormalHu(newLt);
         }
 
-        private static bool Is7DuiHu(IReadOnlyList<Pai> lt)
+        private static bool Is7DuiHu(IReadOnlyList<Mahjong> lt)
         {
             if (lt.Count != 14)
             {
@@ -41,23 +41,24 @@ namespace mj
             return true;
         }
 
-        private static bool NormalHu(List<Pai> lt)
+        private static bool NormalHu(List<Mahjong> lt)
         {
             for (int i = 0; i < lt.Count;)
             {
                 var p = lt[i];
                 var left = lt.FindAll(pai => pai.Id == p.Id);
-                if (left.Count>4)
+                if (left.Count > 4)
                 {
                     // 放置加入牌以外的牌
                     return false;
                 }
+
                 if (left.Count > 1)
                 {
-                    var newLt = new List<Pai>(lt);
+                    var newLt = new List<Mahjong>(lt);
                     newLt.RemoveRange(i, left.Count);
                     i += left.Count;
-                    if (Hu(newLt))
+                    if (HuRule(newLt))
                     {
                         return true;
                     }
@@ -71,7 +72,7 @@ namespace mj
             return false;
         }
 
-        private static bool Hu(List<Pai> lt)
+        private static bool HuRule(List<Mahjong> lt)
         {
             if (lt.Count == 0)
             {
@@ -83,7 +84,7 @@ namespace mj
             if (find.Count == 3)
             {
                 lt.RemoveRange(0, 3);
-                return Hu(lt);
+                return HuRule(lt);
             }
 
             var next = lt.Find(pai => pai.Id == p.Id + 1);
@@ -93,7 +94,7 @@ namespace mj
                 lt.RemoveAt(0);
                 lt.Remove(next);
                 lt.Remove(nnext);
-                return Hu(lt);
+                return HuRule(lt);
             }
 
             return false;
